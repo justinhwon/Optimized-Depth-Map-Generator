@@ -53,7 +53,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                     }
                     float squared_diff = 0;
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
-                        for (int box_x = -feature_width; box_x <= feature_width; box_x+= 4) {
+                        for (int box_x = -feature_width; box_x <= feature_width; box_x++) {
                             int left_x = x + box_x;
                             int left_y = y + box_y;
                             int right_x = x + dx + box_x;
