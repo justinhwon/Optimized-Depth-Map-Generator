@@ -18,6 +18,17 @@
 #include "calc_depth_optimized.h"
 #include "utils.h"
 
+/* Implements the displacement function */
+float displacement_naive(int dx, int dy) {
+    return sqrt(dx * dx + dy * dy);
+}
+
+/* Helper function to return the square euclidean distance between two values. */
+float square_euclidean_distance(float a, float b) {
+    int diff = a - b;
+    return diff * diff;
+}
+
 void calc_depth_optimized(float *depth, float *left, float *right,
         int image_width, int image_height, int feature_width,
         int feature_height, int maximum_displacement) {
@@ -42,11 +53,12 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                     }
                     float squared_diff = 0;
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
-                        for (int box_x = -feature_width; box_x <= feature_width; box_x++) {
+                        for (int box_x = -feature_width; box_x <= feature_width; box_x+= 4) {
                             int left_x = x + box_x;
                             int left_y = y + box_y;
                             int right_x = x + dx + box_x;
                             int right_y = y + dy + box_y;
+
                             squared_diff += square_euclidean_distance(
                                     left[left_y * image_width + left_x],
                                     right[right_y * image_width + right_x]
