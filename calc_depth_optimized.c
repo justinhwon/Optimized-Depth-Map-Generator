@@ -24,9 +24,22 @@ float displacement_naive1(int dx, int dy) {
 }
 
 /* Helper function to return the square euclidean distance between two values. */
-float square_euclidean_distance1(float a, float b) {
+float square_euclidean_distanceN(float a, float b) {
     int diff = a - b;
     return diff * diff;
+}
+
+/* Helper function to return the square euclidean distance between two values. */
+float square_euclidean_distance1(__m128 a, __m128 b, float* sq_array) {
+    __m128 diffs = _mm_sub_ps(a, b);
+    __m128 squares = _mm_mul_ps(diffs, diffs);
+    """
+    __m128 sum =_mm_hadd_ps(squares, squares);
+    __m128 sum =_mm_hadd_ps(squares, squares);
+    // get sum of all four in last 32 bits
+    """
+    _mm_storeu_ps((m128i*)sq_array, squares);
+    return sq_array[0] + sq_array[1] + sq_array[2] + sq_array[3]
 }
 
 void calc_depth_optimized(float *depth, float *left, float *right,
@@ -52,14 +65,32 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         continue;
                     }
                     float squared_diff = 0;
+                    float* squared_diff_array = {0, 0, 0, 0}
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
-                        for (int box_x = -feature_width; box_x <= feature_width; box_x++) {
+                        int box_x;
+                        for (int box_x = -feature_width; box_x <= feature_width; box_x+=4) {
                             int left_x = x + box_x;
                             int left_y = y + box_y;
                             int right_x = x + dx + box_x;
                             int right_y = y + dy + box_y;
 
-                            squared_diff += square_euclidean_distance1(
+                            
+                            left_ptr = left + (left_y * image_width + left_x)
+                            right_ptr = right + (right_y * image_width + right_x)
+
+
+
+                            __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                            __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                            squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
+                        }
+                        for (int box_x = box_x - 4; box_x <= feature_width; box_x++) {
+                            int left_x = x + box_x;
+                            int left_y = y + box_y;
+                            int right_x = x + dx + box_x;
+                            int right_y = y + dy + box_y;
+                            squared_diff += square_euclidean_distanceN(
                                     left[left_y * image_width + left_x],
                                     right[right_y * image_width + right_x]
                                     );
