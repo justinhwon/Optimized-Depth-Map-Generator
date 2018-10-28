@@ -19,12 +19,12 @@
 #include "utils.h"
 
 /* Implements the displacement function */
-float displacement_naive(int dx, int dy) {
+float displacement_naive1(int dx, int dy) {
     return sqrt(dx * dx + dy * dy);
 }
 
 /* Helper function to return the square euclidean distance between two values. */
-float square_euclidean_distance(float a, float b) {
+float square_euclidean_distance1(float a, float b) {
     int diff = a - b;
     return diff * diff;
 }
@@ -59,7 +59,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             int right_x = x + dx + box_x;
                             int right_y = y + dy + box_y;
 
-                            squared_diff += square_euclidean_distance(
+                            squared_diff += square_euclidean_distance1(
                                     left[left_y * image_width + left_x],
                                     right[right_y * image_width + right_x]
                                     );
@@ -67,7 +67,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                     }
                     if (min_diff == -1 || min_diff > squared_diff
                             || (min_diff == squared_diff
-                                && displacement_naive(dx, dy) < displacement_naive(min_dx, min_dy))) {
+                                && displacement_naive1(dx, dy) < displacement_naive1(min_dx, min_dy))) {
                         min_diff = squared_diff;
                         min_dx = dx;
                         min_dy = dy;
@@ -78,7 +78,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                 if (maximum_displacement == 0) {
                     depth[y * image_width + x] = 0;
                 } else {
-                    depth[y * image_width + x] = displacement_naive(min_dx, min_dy);
+                    depth[y * image_width + x] = displacement_naive1(min_dx, min_dy);
                 }
             } else {
                 depth[y * image_width + x] = 0;
