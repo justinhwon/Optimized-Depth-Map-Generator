@@ -63,7 +63,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         continue;
                     }
                     float squared_diff = 0;
-                    float squared_diff_array[4] = {0, 0, 0, 0}
+                    float squared_diff_array[4] = {0, 0, 0, 0};
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
                         int box_x;
                         for (int box_x = -feature_width; box_x <= feature_width; box_x+=4) {
@@ -73,8 +73,8 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             int right_y = y + dy + box_y;
 
                             
-                            left_ptr = left + (left_y * image_width + left_x)
-                            right_ptr = right + (right_y * image_width + right_x)
+                            float* left_ptr = left + (left_y * image_width + left_x)
+                            float* right_ptr = right + (right_y * image_width + right_x)
 
 
 
