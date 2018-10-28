@@ -83,7 +83,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
 
                             squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
                         }
-                        for (box_x = box_x - 4; box_x <= feature_width; box_x++) {
+                        for(; box_x <= feature_width;box_x++){
                             int left_x = x + box_x;
                             int left_y = y + box_y;
                             int right_x = x + dx + box_x;
