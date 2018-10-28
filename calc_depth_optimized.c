@@ -66,7 +66,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                     float squared_diff_array[4] = {0, 0, 0, 0};
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
                         int box_x;
-                        for (int box_x = -feature_width; box_x <= feature_width; box_x+=4) {
+                        for (box_x = -feature_width; box_x <= feature_width; box_x+=4) {
                             int left_x = x + box_x;
                             int left_y = y + box_y;
                             int right_x = x + dx + box_x;
@@ -83,7 +83,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
 
                             squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
                         }
-                        for (int box_x = box_x - 4; box_x <= feature_width; box_x++) {
+                        for (box_x = box_x - 4; box_x <= feature_width; box_x++) {
                             int left_x = x + box_x;
                             int left_y = y + box_y;
                             int right_x = x + dx + box_x;
