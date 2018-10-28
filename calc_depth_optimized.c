@@ -73,8 +73,8 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             int right_y = y + dy + box_y;
 
                             
-                            float* left_ptr = left + (left_y * image_width + left_x)
-                            float* right_ptr = right + (right_y * image_width + right_x)
+                            float* left_ptr = left + (left_y * image_width + left_x);
+                            float* right_ptr = right + (right_y * image_width + right_x);
 
 
 
