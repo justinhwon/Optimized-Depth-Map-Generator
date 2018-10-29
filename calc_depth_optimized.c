@@ -73,16 +73,18 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                     float squared_diff = 0;
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
                         int box_x;
-                        for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
-                            int left_x = x + box_x;
-                            int left_y = y + box_y;
-                            int right_x = x + dx + box_x;
-                            int right_y = y + dy + box_y;
+
+                        // initialize here so don't have to initialize twice in both loops
+                        int left_x = x + box_x;
+                        int left_y = y + box_y;
+                        int right_x = x + dx + box_x;
+                        int right_y = y + dy + box_y;
+
+                        for (box_x = -feature_width; box_x <= feature_width - 4; box_x += 4) {
 
                             
                             float* left_ptr = left + (left_y * image_width + left_x);
                             float* right_ptr = right + (right_y * image_width + right_x);
-
 
 
                             __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
@@ -91,10 +93,6 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
                         }
                         for(; box_x <= feature_width;box_x++){
-                            int left_x = x + box_x;
-                            int left_y = y + box_y;
-                            int right_x = x + dx + box_x;
-                            int right_y = y + dy + box_y;
                             squared_diff += square_euclidean_distanceN(
                                     left[left_y * image_width + left_x],
                                     right[right_y * image_width + right_x]
