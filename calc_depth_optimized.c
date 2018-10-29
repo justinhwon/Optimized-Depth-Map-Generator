@@ -39,7 +39,7 @@ float square_euclidean_distance1(__m128 a, __m128 b, float sq_array[]) {
     //sum =_mm_hadd_ps(sum, sum);
     // get sum of all four in first 32 bits, only 1 array access
 
-    _mm_storeu_ps((__m128 *) sq_array, sum);
+    _mm_storeu_ps((__m128 *) sq_array, squares);
 
     return sq_array[0] + sq_array[1] + sq_array[2] + sq_array[3];
     //return sq_array[0];
