@@ -80,6 +80,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
             float min_diff = -1;
             int min_dy = 0;
             int min_dx = 0;
+            float min_displacement = 0;
             for (int dy = -maximum_displacement; dy <= maximum_displacement; dy++) {
                 for (int dx = -maximum_displacement; dx <= maximum_displacement; dx++) {
                     if (y + dy - feature_height < 0
@@ -160,12 +161,12 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         
                     }
                     if (min_diff == -1 || min_diff > squared_diff
-                            || (min_diff == squared_diff)) { //inline fxn call
-                        if(sqrt(dx * dx + dy * dy) < sqrt(min_dx * min_dx + min_dy * min_dy)){
-                            min_diff = squared_diff;
-                            min_dx = dx;
-                            min_dy = dy;
-                        }
+                            || (min_diff == squared_diff
+                                && sqrt(dx * dx + dy * dy) < min_displacement)) { //inline fxn call
+                        min_diff = squared_diff;
+                        min_dx = dx;
+                        min_dy = dy;
+                        min_displacement = sqrt(min_dx * min_dx + min_dy * min_dy);
                     }
                 }
             }
@@ -173,7 +174,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                 if (maximum_displacement == 0) {
                     depth[y * image_width + x] = 0;
                 } else {
-                    depth[y * image_width + x] = sqrt(min_dx * min_dx + min_dy * min_dy); //inline fxn call
+                    depth[y * image_width + x] = min_displacement; //inline fxn call
                 }
             } else {
                 depth[y * image_width + x] = 0;
