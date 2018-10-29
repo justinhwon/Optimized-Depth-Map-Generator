@@ -160,11 +160,12 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         
                     }
                     if (min_diff == -1 || min_diff > squared_diff
-                            || (min_diff == squared_diff
-                                && sqrt(dx * dx + dy * dy) < sqrt(min_dx * min_dx + min_dy * min_dy))) { //inline fxn call
-                        min_diff = squared_diff;
-                        min_dx = dx;
-                        min_dy = dy;
+                            || (min_diff == squared_diff)) { //inline fxn call
+                        if(sqrt(dx * dx + dy * dy) < sqrt(min_dx * min_dx + min_dy * min_dy)){
+                            min_diff = squared_diff;
+                            min_dx = dx;
+                            min_dy = dy;
+                        }
                     }
                 }
             }
