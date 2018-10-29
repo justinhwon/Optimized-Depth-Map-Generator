@@ -50,6 +50,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
         int feature_height, int maximum_displacement) {
     // Array to be used whenever needed
     float squared_diff_array[4] = {0, 0, 0, 0};
+    float displacement_array[4] = {0, 0, 0, 0};
 
     // Naive implementation
     for (int y = 0; y < image_height; y++) {
@@ -62,8 +63,9 @@ void calc_depth_optimized(float *depth, float *left, float *right,
             float min_diff = -1;
             int min_dy = 0;
             int min_dx = 0;
+
             for (int dy = -maximum_displacement; dy <= maximum_displacement; dy++) {
-                for (int dx = -maximum_displacement; dx <= maximum_displacement; dx++) {
+                for (int dx = -maximum_displacement; dx <= maximum_displacement; dx += 4) {
                     if (y + dy - feature_height < 0
                             || y + dy + feature_height >= image_height
                             || x + dx - feature_width < 0
@@ -101,6 +103,8 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                                     );
                         }
                     }
+
+
                     if (min_diff == -1 || min_diff > squared_diff
                             || (min_diff == squared_diff
                                 && displacement_naive1(dx, dy) < displacement_naive1(min_dx, min_dy))) {
