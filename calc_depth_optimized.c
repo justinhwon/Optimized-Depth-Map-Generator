@@ -57,7 +57,7 @@ float square_euclidean_distance_tail(__m128 a, __m128 b, float sq_array[], int n
     _mm_storeu_ps((__m128 *) sq_array, squares);
 
     float euclid = 0.0;
-    for (int x = 0; int x < nums_left; x++){
+    for (int x = 0; x < nums_left; x++){
         euclid += sq_array[x];
     }
     return euclid;
