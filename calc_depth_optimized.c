@@ -48,6 +48,9 @@ float square_euclidean_distance1(__m128 a, __m128 b, float sq_array[]) {
 void calc_depth_optimized(float *depth, float *left, float *right,
         int image_width, int image_height, int feature_width,
         int feature_height, int maximum_displacement) {
+    // Array to be used whenever needed
+    float squared_diff_array[4] = {0, 0, 0, 0};
+
     // Naive implementation
     for (int y = 0; y < image_height; y++) {
         for (int x = 0; x < image_width; x++) {
@@ -68,7 +71,6 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         continue;
                     }
                     float squared_diff = 0;
-                    float squared_diff_array[4] = {0, 0, 0, 0};
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
                         int box_x;
                         for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
