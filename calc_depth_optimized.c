@@ -130,7 +130,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             
                         }
                         
-                        for (box_x = box_x - 1; box_x <= feature_width - 4; box_x+=4) {
+                        for (box_x = box_x - 4; box_x <= feature_width - 4; box_x+=4) {
                             int left_x = x + box_x;
                             int right_x = x + dx + box_x;
 
