@@ -118,9 +118,14 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
                             
                         }
-                        // pad vector for tail case instead of looping with naive case
+                        // ignore later values in vector for tail case instead of looping with naive case
                         int numbers_left = feature_width - box_x + 1;
-                        // if 1 don't loop
+
+                        // if 1 don't loop (doesnt help just makes slower)
+                        /*
+                        if(numbers_left == 0){
+                            continue;
+                        }
                         if(numbers_left == 1){
                             int left_x = x + box_x;
                             int right_x = x + dx + box_x;
@@ -128,6 +133,8 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             squared_diff += diff * diff;
                             continue;
                         }
+                        */
+
                         int left_x = x + box_x;
                         int right_x = x + dx + box_x;
 
