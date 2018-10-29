@@ -122,6 +122,8 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         int numbers_left = feature_width - box_x + 1;
                         // if 1 don't loop
                         if(numbers_left == 1){
+                            int left_x = x + box_x;
+                            int right_x = x + dx + box_x;
                             int diff = left[left_y * image_width + left_x] - right[right_y * image_width + right_x];
                             squared_diff += diff * diff;
                             continue;
