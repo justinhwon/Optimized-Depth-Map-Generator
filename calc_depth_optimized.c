@@ -123,7 +123,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             _mm_storeu_ps((__m128 *) squared_diff_array, squares0);
                             __m128 diffs1 = _mm_sub_ps(leftVec1, rightVec1);
                             __m128 squares1 = _mm_mul_ps(diffs1, diffs1);
-                            _mm_storeu_ps((__m128 *) squared_diff_array+4, squares1);
+                            _mm_storeu_ps((__m128 *) (squared_diff_array+4), squares1);
                             squared_diff
                                 += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3]
                                 + squared_diff_array[4] + squared_diff_array[5] + squared_diff_array[6] + squared_diff_array[7];
