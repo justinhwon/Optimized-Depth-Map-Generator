@@ -136,7 +136,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         __m128 squares = _mm_mul_ps(diffs, diffs);
                         _mm_storeu_ps((__m128 *) sq_array, squares);
                         float euclid = 0.0;
-                        for (int x = 0; x < nums_left; x++){
+                        for (int x = 0; x < numbers_left; x++){
                             euclid += sq_array[x];
                         }
                         squared_diff += euclid;
