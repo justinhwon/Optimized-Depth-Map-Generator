@@ -120,6 +120,9 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         }
                         // pad vector for tail case instead of looping with naive case
                         int numbers_left = feature_width - box_x + 1;
+                        if(numbers_left == 0){
+                            continue;
+                        }
                         int left_x = x + box_x;
                         int right_x = x + dx + box_x;
 
