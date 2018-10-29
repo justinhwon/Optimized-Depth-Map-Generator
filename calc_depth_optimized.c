@@ -109,15 +109,14 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
                             __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
 
-                            squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
+                            //squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
 
                             //inline fxn call to square_euclidean_distance1
-                            /*
                             __m128 diffs = _mm_sub_ps(leftVec, rightVec);
                             __m128 squares = _mm_mul_ps(diffs, diffs);
-                            _mm_storeu_ps((__m128 *) sq_array, squares);
-                            squared_diff += sq_array[0] + sq_array[1] + sq_array[2] + sq_array[3];
-                            */
+                            _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                            squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
+                            
                         }
                         // pad vector for tail case instead of looping with naive case
                         int numbers_left = feature_width - box_x + 1;
@@ -131,19 +130,18 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
                         __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
 
-                        squared_diff += square_euclidean_distance_tail(leftVec, rightVec, squared_diff_array, numbers_left);
+                        //squared_diff += square_euclidean_distance_tail(leftVec, rightVec, squared_diff_array, numbers_left);
 
                         //inline fxn call to square_euclidean_distance_tail
-                        /*
                         __m128 diffs = _mm_sub_ps(leftVec, rightVec);
                         __m128 squares = _mm_mul_ps(diffs, diffs);
-                        _mm_storeu_ps((__m128 *) sq_array, squares);
+                        _mm_storeu_ps((__m128 *) squared_diff_array, squares);
                         float euclid = 0.0;
                         for (int x = 0; x < numbers_left; x++){
-                            euclid += sq_array[x];
+                            euclid += squared_diff_array[x];
                         }
                         squared_diff += euclid;
-                        */
+                        
                         
                     }
                     if (min_diff == -1 || min_diff > squared_diff
