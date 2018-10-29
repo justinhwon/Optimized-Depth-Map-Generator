@@ -108,7 +108,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
                         }
                         // pad vector for tail case instead of looping with naive case
-                        int numbers_left = feature_width - box_x;
+                        int numbers_left = feature_width - box_x + 1;
                         int left_x = x + box_x;
                         int left_y = y + box_y;
                         int right_x = x + dx + box_x;
