@@ -41,7 +41,7 @@ float square_euclidean_distance1(__m128 a, __m128 b, float sq_array[]) {
 
     _mm_storeu_ps((__m128 *) sq_array, squares);
     // return sq_array[0] + sq_array[1] + sq_array[2] + sq_array[3];
-    return sq_array[0]
+    return sq_array[0];
 }
 
 void calc_depth_optimized(float *depth, float *left, float *right,
