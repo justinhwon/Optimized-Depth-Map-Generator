@@ -90,12 +90,16 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                     }
                     float squared_diff = 0;
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
+                        // need to initialize box_x
                         int box_x;
+
+                        // left_y and right_y don't change when looping over box_x
+                        int left_y = y + box_y;
+                        int right_y = y + dy + box_y;
+
                         for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
                             int left_x = x + box_x;
-                            int left_y = y + box_y;
                             int right_x = x + dx + box_x;
-                            int right_y = y + dy + box_y;
 
                             
                             float* left_ptr = left + (left_y * image_width + left_x);
@@ -110,9 +114,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         // pad vector for tail case instead of looping with naive case
                         int numbers_left = feature_width - box_x + 1;
                         int left_x = x + box_x;
-                        int left_y = y + box_y;
                         int right_x = x + dx + box_x;
-                        int right_y = y + dy + box_y;
 
                         float* left_ptr = left + (left_y * image_width + left_x);
                         float* right_ptr = right + (right_y * image_width + right_x);
