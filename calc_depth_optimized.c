@@ -45,6 +45,24 @@ float square_euclidean_distance1(__m128 a, __m128 b, float sq_array[]) {
     //return sq_array[0];
 }
 
+float square_euclidean_distance_tail(__m128 a, __m128 b, float sq_array[], int nums_left) {
+    __m128 diffs = _mm_sub_ps(a, b);
+    __m128 squares = _mm_mul_ps(diffs, diffs);
+
+    // doesn't make faster
+    //__m128 sum =_mm_hadd_ps(squares, squares);
+    //sum =_mm_hadd_ps(sum, sum);
+    // get sum of all four in first 32 bits, only 1 array access
+
+    _mm_storeu_ps((__m128 *) sq_array, squares);
+
+    float euclid = 0.0;
+    for (int x = 0; int x < nums_left; x++){
+        euclid += sq_array[x];
+    }
+    return euclid;
+}
+
 void calc_depth_optimized(float *depth, float *left, float *right,
         int image_width, int image_height, int feature_width,
         int feature_height, int maximum_displacement) {
@@ -84,22 +102,27 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             float* right_ptr = right + (right_y * image_width + right_x);
 
 
-
                             __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
                             __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
 
                             squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
                         }
-                        for(; box_x <= feature_width;box_x++){
-                            int left_x = x + box_x;
-                            int left_y = y + box_y;
-                            int right_x = x + dx + box_x;
-                            int right_y = y + dy + box_y;
-                            squared_diff += square_euclidean_distanceN(
-                                    left[left_y * image_width + left_x],
-                                    right[right_y * image_width + right_x]
-                                    );
-                        }
+                        // pad vector for tail case instead of looping with naive case
+                        int numbers_left = feature_width - box_x;
+                        int left_x = x + box_x;
+                        int left_y = y + box_y;
+                        int right_x = x + dx + box_x;
+                        int right_y = y + dy + box_y;
+
+                        float* left_ptr = left + (left_y * image_width + left_x);
+                        float* right_ptr = right + (right_y * image_width + right_x);
+
+
+                        __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                        __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                        squared_diff += square_euclidean_distance_tail(leftVec, rightVec, squared_diff_array, numbers_left);
+                        
                     }
                     if (min_diff == -1 || min_diff > squared_diff
                             || (min_diff == squared_diff
