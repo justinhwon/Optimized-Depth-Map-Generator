@@ -67,7 +67,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
         int image_width, int image_height, int feature_width,
         int feature_height, int maximum_displacement) {
     // Array to be used whenever needed
-    float squared_diff_array[4] = {0, 0, 0, 0};
+    float sq_array[4] = {0, 0, 0, 0};
 
     // Naive implementation
     for (int y = 0; y < image_height; y++) {
