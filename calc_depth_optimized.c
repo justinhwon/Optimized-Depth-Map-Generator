@@ -67,7 +67,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
         int image_width, int image_height, int feature_width,
         int feature_height, int maximum_displacement) {
     // Array to be used whenever needed
-    float squared_diff_array[4] = {0, 0, 0, 0};
+    float squared_diff_array[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
     // Naive implementation
     for (int y = 0; y < image_height; y++) {
@@ -97,7 +97,39 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         int left_y = y + box_y;
                         int right_y = y + dy + box_y;
 
-                        for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
+                        for (box_x = -feature_width; box_x <= feature_width - 8; box_x+=8) {
+                            int left_x0 = x + box_x;
+                            int right_x0 = x + dx + box_x;
+                            int left_x1 = x + 4 + box_x;
+                            int right_x1 = x + 4 + dx + box_x; 
+
+                            
+                            float* left_ptr0 = left + (left_y * image_width + left_x0);
+                            float* right_ptr0 = right + (right_y * image_width + right_x0);
+                            float* left_ptr1 = left + (left_y * image_width + left_x1);
+                            float* right_ptr1 = right + (right_y * image_width + right_x1);
+
+
+                            __m128 leftVec0 = _mm_loadu_ps((__m128 *) left_ptr0);
+                            __m128 rightVec0 = _mm_loadu_ps((__m128 *) right_ptr0);
+                            __m128 leftVec1 = _mm_loadu_ps((__m128 *) left_ptr1);
+                            __m128 rightVec1 = _mm_loadu_ps((__m128 *) right_ptr1);
+
+                            //squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
+
+                            //inline fxn call to square_euclidean_distance1
+                            __m128 diffs0 = _mm_sub_ps(leftVec0, rightVec0);
+                            __m128 squares0 = _mm_mul_ps(diffs0, diffs0);
+                            _mm_storeu_ps((__m128 *) squared_diff_array, squares0);
+                            __m128 diffs1 = _mm_sub_ps(leftVec1, rightVec1);
+                            __m128 squares1 = _mm_mul_ps(diffs1, diffs1);
+                            _mm_storeu_ps((__m128 *) squared_diff_array+4, squares1);
+                            squared_diff
+                                += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3]
+                                + squared_diff_array[4] + squared_diff_array[5] + squared_diff_array[6] + squared_diff_array[7];
+                            
+                        }
+                        for (; box_x <= feature_width - 4; box_x+=4) {
                             int left_x = x + box_x;
                             int right_x = x + dx + box_x;
 
