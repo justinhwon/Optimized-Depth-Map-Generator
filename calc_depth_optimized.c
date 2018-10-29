@@ -89,7 +89,224 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         continue;
                     }
                     float squared_diff = 0;
-                    for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
+                    int box_y;
+                    for (box_y = -feature_height; box_y <= feature_height - 4; box_y+=4) {
+                        // need to initialize box_x
+                        int box_x;
+
+                        //######## box_x0's iteration ########
+
+                        // left_y and right_y don't change when looping over box_x
+                        int left_y = y + box_y;
+                        int right_y = y + dy + box_y;
+
+                        for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
+                            int left_x = x + box_x;
+                            int right_x = x + dx + box_x;
+
+                            
+                            float* left_ptr = left + (left_y * image_width + left_x);
+                            float* right_ptr = right + (right_y * image_width + right_x);
+
+
+                            __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                            __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                            //squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
+
+                            //inline fxn call to square_euclidean_distance1
+                            __m128 diffs = _mm_sub_ps(leftVec, rightVec);
+                            __m128 squares = _mm_mul_ps(diffs, diffs);
+                            _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                            squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
+                            
+                        }
+                        // ignore later values in vector for tail case instead of looping with naive case
+                        int numbers_left = feature_width - box_x + 1;
+
+                        int left_x = x + box_x;
+                        int right_x = x + dx + box_x;
+
+                        float* left_ptr = left + (left_y * image_width + left_x);
+                        float* right_ptr = right + (right_y * image_width + right_x);
+
+
+                        __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                        __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                        //squared_diff += square_euclidean_distance_tail(leftVec, rightVec, squared_diff_array, numbers_left);
+
+                        //inline fxn call to square_euclidean_distance_tail
+                        __m128 diffs = _mm_sub_ps(leftVec, rightVec);
+                        __m128 squares = _mm_mul_ps(diffs, diffs);
+                        _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                        float euclid = 0.0;
+                        for (int x = 0; x < numbers_left; x++){
+                            euclid += squared_diff_array[x];
+                        }
+                        squared_diff += euclid;
+
+                        //######## box_y1's iteration ########
+
+                        // left_y and right_y don't change when looping over box_x
+                        left_y = y + box_y + 1;
+                        right_y = y + dy + box_y + 1;
+
+                        for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
+                            int left_x = x + box_x;
+                            int right_x = x + dx + box_x;
+
+                            
+                            float* left_ptr = left + (left_y * image_width + left_x);
+                            float* right_ptr = right + (right_y * image_width + right_x);
+
+
+                            __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                            __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                            //squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
+
+                            //inline fxn call to square_euclidean_distance1
+                            __m128 diffs = _mm_sub_ps(leftVec, rightVec);
+                            __m128 squares = _mm_mul_ps(diffs, diffs);
+                            _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                            squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
+                            
+                        }
+                        // ignore later values in vector for tail case instead of looping with naive case
+                        numbers_left = feature_width - box_x + 1;
+
+                        left_x = x + box_x;
+                        right_x = x + dx + box_x;
+
+                        left_ptr = left + (left_y * image_width + left_x);
+                        right_ptr = right + (right_y * image_width + right_x);
+
+
+                        leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                        rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                        //squared_diff += square_euclidean_distance_tail(leftVec, rightVec, squared_diff_array, numbers_left);
+
+                        //inline fxn call to square_euclidean_distance_tail
+                        diffs = _mm_sub_ps(leftVec, rightVec);
+                        squares = _mm_mul_ps(diffs, diffs);
+                        _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                        euclid = 0.0;
+                        for (int x = 0; x < numbers_left; x++){
+                            euclid += squared_diff_array[x];
+                        }
+                        squared_diff += euclid;
+
+                        //########box_y2's iteration ########
+
+                        // left_y and right_y don't change when looping over box_x
+                        left_y = y + box_y + 2;
+                        right_y = y + dy + box_y + 2;
+
+                        for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
+                            int left_x = x + box_x;
+                            int right_x = x + dx + box_x;
+
+                            
+                            float* left_ptr = left + (left_y * image_width + left_x);
+                            float* right_ptr = right + (right_y * image_width + right_x);
+
+
+                            __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                            __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                            //squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
+
+                            //inline fxn call to square_euclidean_distance1
+                            __m128 diffs = _mm_sub_ps(leftVec, rightVec);
+                            __m128 squares = _mm_mul_ps(diffs, diffs);
+                            _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                            squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
+                            
+                        }
+                        // ignore later values in vector for tail case instead of looping with naive case
+                        numbers_left = feature_width - box_x + 1;
+
+
+                        left_x = x + box_x;
+                        right_x = x + dx + box_x;
+
+                        left_ptr = left + (left_y * image_width + left_x);
+                        right_ptr = right + (right_y * image_width + right_x);
+
+
+                        leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                        rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                        //squared_diff += square_euclidean_distance_tail(leftVec, rightVec, squared_diff_array, numbers_left);
+
+                        //inline fxn call to square_euclidean_distance_tail
+                        diffs = _mm_sub_ps(leftVec, rightVec);
+                        squares = _mm_mul_ps(diffs, diffs);
+                        _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                        euclid = 0.0;
+                        for (int x = 0; x < numbers_left; x++){
+                            euclid += squared_diff_array[x];
+                        }
+                        squared_diff += euclid;
+
+                        //########box_y3's iteration ########
+
+                        // left_y and right_y don't change when looping over box_x
+                        left_y = y + box_y + 3;
+                        right_y = y + dy + box_y + 3;
+
+                        for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
+                            int left_x = x + box_x;
+                            int right_x = x + dx + box_x;
+
+                            
+                            float* left_ptr = left + (left_y * image_width + left_x);
+                            float* right_ptr = right + (right_y * image_width + right_x);
+
+
+                            __m128 leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                            __m128 rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                            //squared_diff += square_euclidean_distance1(leftVec, rightVec, squared_diff_array);
+
+                            //inline fxn call to square_euclidean_distance1
+                            __m128 diffs = _mm_sub_ps(leftVec, rightVec);
+                            __m128 squares = _mm_mul_ps(diffs, diffs);
+                            _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                            squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
+                            
+                        }
+                        // ignore later values in vector for tail case instead of looping with naive case
+                        numbers_left = feature_width - box_x + 1;
+
+                        left_x = x + box_x;
+                        right_x = x + dx + box_x;
+
+                        left_ptr = left + (left_y * image_width + left_x);
+                        right_ptr = right + (right_y * image_width + right_x);
+
+
+                        leftVec = _mm_loadu_ps((__m128 *) left_ptr);
+                        rightVec = _mm_loadu_ps((__m128 *) right_ptr);
+
+                        //squared_diff += square_euclidean_distance_tail(leftVec, rightVec, squared_diff_array, numbers_left);
+
+                        //inline fxn call to square_euclidean_distance_tail
+                        diffs = _mm_sub_ps(leftVec, rightVec);
+                        squares = _mm_mul_ps(diffs, diffs);
+                        _mm_storeu_ps((__m128 *) squared_diff_array, squares);
+                        euclid = 0.0;
+                        for (int x = 0; x < numbers_left; x++){
+                            euclid += squared_diff_array[x];
+                        }
+                        squared_diff += euclid;
+                        
+                        
+                    }
+                    // tail case for box_y loop
+                    for (; box_y <= feature_height; box_y++) {
                         // need to initialize box_x
                         int box_x;
 
@@ -159,6 +376,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         
                         
                     }
+                    // end of tail case for box_y
                     if (min_diff == -1 || min_diff > squared_diff
                             || (min_diff == squared_diff
                                 && sqrt(dx * dx + dy * dy) < sqrt(min_dx * min_dx + min_dy * min_dy))) { //inline fxn call
