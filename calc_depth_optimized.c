@@ -90,7 +90,14 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         continue;
                     }
                     float squared_diff = 0;
+
+                    
+
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
+
+                        // vector to hold sum of squared_diffs
+                        __m128 squared_diff_vector = _mm_setzero_ps();
+                        
                         // need to initialize box_x
                         int box_x;
 
@@ -115,10 +122,13 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             //inline fxn call to square_euclidean_distance1
                             __m128 diffs = _mm_sub_ps(leftVec, rightVec);
                             __m128 squares = _mm_mul_ps(diffs, diffs);
-                            _mm_storeu_ps((__m128 *) squared_diff_array, squares);
-                            squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
+                            squared_diff_vector = _mm_add_ps(squares, squares);
+                            
                             
                         }
+                        _mm_storeu_ps((__m128 *) squared_diff_array, squared_diff_vector);
+                        squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
+
                         // ignore later values in vector for tail case instead of looping with naive case
                         int numbers_left = feature_width - box_x + 1;
 
