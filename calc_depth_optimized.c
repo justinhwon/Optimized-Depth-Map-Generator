@@ -91,12 +91,10 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                     }
                     float squared_diff = 0;
 
-                    
+                    // vector to hold sum of squared_diffs
+                    __m128 squared_diff_vector = _mm_setzero_ps();
 
                     for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
-
-                        // vector to hold sum of squared_diffs
-                        __m128 squared_diff_vector = _mm_setzero_ps();
                         
                         // need to initialize box_x
                         int box_x;
@@ -124,11 +122,8 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             __m128 squares = _mm_mul_ps(diffs, diffs);
                             squared_diff_vector = _mm_add_ps(squared_diff_vector, squares);
                             
-                            
                         }
-                        _mm_storeu_ps((__m128 *) squared_diff_array, squared_diff_vector);
-                        squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
-
+                        
                         // ignore later values in vector for tail case instead of looping with naive case
                         int numbers_left = feature_width - box_x + 1;
 
@@ -170,6 +165,11 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                         
                         
                     }
+
+                    // Add up the stores squared_diffs in squared_diff_vector
+                    _mm_storeu_ps((__m128 *) squared_diff_array, squared_diff_vector);
+                    squared_diff += squared_diff_array[0] + squared_diff_array[1] + squared_diff_array[2] + squared_diff_array[3];
+                   
                     if (min_diff == -1 || min_diff > squared_diff
                             || (min_diff == squared_diff
                                 && sqrt(dx * dx + dy * dy) < min_displacement)) { //inline fxn call
