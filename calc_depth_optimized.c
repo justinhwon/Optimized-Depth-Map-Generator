@@ -122,7 +122,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
                             //inline fxn call to square_euclidean_distance1
                             __m128 diffs = _mm_sub_ps(leftVec, rightVec);
                             __m128 squares = _mm_mul_ps(diffs, diffs);
-                            squared_diff_vector = _mm_add_ps(squares, squares);
+                            squared_diff_vector = _mm_add_ps(squared_diff_vector, squares);
                             
                             
                         }
