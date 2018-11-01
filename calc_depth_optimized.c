@@ -76,12 +76,10 @@ void calc_depth_optimized(float *depth, float *left, float *right,
     // Naive implementation
     #pragma omp parallel
     {
-        int num_threads = omp_get_num_threads();
-        int thread_ID = omp_get_thread_num();
         // Array to be used whenever needed
         float squared_diff_array[4] = {0, 0, 0, 0};
-
-    for (int y = thread_ID; y < image_height; y+=num_threads) {
+    #pragma omp for
+    for (int y = 0; y < image_height; y++) {
         for (int x = 0; x < image_width; x++) {
             if (y < feature_height || y >= image_height - feature_height
                     || x < feature_width || x >= image_width - feature_width) {
