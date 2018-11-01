@@ -111,7 +111,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
 
                         #pragma omp parallel
                         {
-                            #pragma omp for
+                            #pragma omp for reduction(+: squared_diff_vector)
                             for (box_x = -feature_width; box_x <= feature_width - 4; box_x+=4) {
                                 int left_x = x + box_x;
                                 int right_x = x + dx + box_x;
