@@ -101,7 +101,7 @@ void calc_depth_optimized(float *depth, float *left, float *right,
 
                     #pragma omp parallel
                     {
-                        #pragma omp for
+                        #pragma omp for collapse(2)
                         for (int box_y = -feature_height; box_y <= feature_height; box_y++) {
                         
                             // need to initialize box_x
